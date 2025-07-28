@@ -6,6 +6,7 @@ import (
 
 	"github.com/WillKopa/boot_dev_chirpy/api"
 	"github.com/WillKopa/boot_dev_chirpy/constants"
+	_ "github.com/lib/pq"
 )
 
 func main() {
