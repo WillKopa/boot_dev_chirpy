@@ -12,7 +12,7 @@ func main() {
 	server_mux := api.Get_mux()
 	server := &http.Server{
 		Handler: server_mux,
-		Addr:    ":" + constants.PORT,
+		Addr:    "localhost:" + constants.PORT,
 	}
 	log.Printf("Serving files from %s on port: %s\n", constants.ROOT_PATH, constants.PORT)
 	log.Fatal(server.ListenAndServe())

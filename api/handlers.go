@@ -12,9 +12,16 @@ func is_service_available(rw http.ResponseWriter, req *http.Request) {
 }
 
 func (cfg *apiConfig) server_metrics(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	rw.Header().Add("Content-Type", "text/html; charset=utf-8")
 	rw.WriteHeader(http.StatusOK)
-	text := fmt.Sprintf("Hits: %v", cfg.file_server_hits.Load())
+	metrics_text := 
+	`<html>
+		<body>
+			<h1>Welcome, Chirpy Admin</h1>
+			<p>Chirpy has been visited %d times!</p>
+		</body>
+	</html>`
+	text := fmt.Sprintf(metrics_text, cfg.file_server_hits.Load())
 	rw.Write([]byte(text))
 }
 
