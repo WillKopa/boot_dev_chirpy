@@ -38,22 +38,6 @@ func (cfg *apiConfig) reset_everything(rw http.ResponseWriter, req *http.Request
 	rw.Write([]byte(text))
 }
 
-func (cfg *apiConfig) create_user(rw http.ResponseWriter, req *http.Request) {
-	user, err := unmarshal_json[User](req)
-	if err != nil {
-		respond_with_error(rw, http.StatusBadRequest, "unable to parse json from request")
-		return
-	}
-	db_user, err := cfg.db_queries.CreateUser(req.Context(), user.Email)
-
-	if err != nil {
-		respond_with_error(rw, http.StatusInternalServerError, "Something went wrong, user not created")
-		return
-	}
-
-	respond_with_json(rw, http.StatusCreated, db_user)
-}
-
 func (cfg *apiConfig) middleware_metrics_inc(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
 		cfg.file_server_hits.Add(1)
