@@ -3,26 +3,19 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/WillKopa/boot_dev_chirpy/api"
+	"github.com/WillKopa/boot_dev_chirpy/constants"
 )
 
 func main() {
-	const port = "8080"
-	const root_path = "."
-
-	server_mux := http.NewServeMux()
-	server_mux.Handle("/app/", http.StripPrefix("/app", http.FileServer(http.Dir(root_path))))
-	server_mux.HandleFunc("/healthz", is_service_available)
-
+	server_mux := api.Get_mux()
 	server := &http.Server{
 		Handler: server_mux,
-		Addr:    ":" + port,
+		Addr:    ":" + constants.PORT,
 	}
-	log.Printf("Serving files from %s on port: %s\n", root_path, port)
+	log.Printf("Serving files from %s on port: %s\n", constants.ROOT_PATH, constants.PORT)
 	log.Fatal(server.ListenAndServe())
 }
 
-func is_service_available(rw http.ResponseWriter, req *http.Request) {
-	rw.Header().Add("Content-Type", "text/plain; charset=utf-8")
-	rw.WriteHeader(http.StatusOK)
-	rw.Write([]byte(http.StatusText(http.StatusOK)))
-}
+

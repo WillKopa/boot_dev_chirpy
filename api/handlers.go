@@ -1,0 +1,34 @@
+package api
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func is_service_available(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte(http.StatusText(http.StatusOK)))
+}
+
+func (cfg *apiConfig) server_metrics(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	rw.WriteHeader(http.StatusOK)
+	text := fmt.Sprintf("Hits: %v", cfg.file_server_hits.Load())
+	rw.Write([]byte(text))
+}
+
+func (cfg *apiConfig) reset_metrics(rw http.ResponseWriter, req *http.Request) {
+	rw.Header().Add("Content-Type", "text/plain; charset=utf-8")
+	rw.WriteHeader(http.StatusOK)
+	cfg.file_server_hits.Store(0)
+	text := fmt.Sprintf("Hits Reset to: %v", cfg.file_server_hits.Load())
+	rw.Write([]byte(text))
+}
+
+func (cfg *apiConfig) middleware_metrics_inc(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(wr http.ResponseWriter, req *http.Request) {
+		cfg.file_server_hits.Add(1)
+		next.ServeHTTP(wr, req)
+	})
+}
