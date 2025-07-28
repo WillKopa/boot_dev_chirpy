@@ -18,9 +18,9 @@ func Get_mux() *http.ServeMux {
 
 	server_mux := http.NewServeMux()
 	server_mux.Handle("/app/", http.StripPrefix("/app", cfg.middleware_metrics_inc(http.FileServer(http.Dir(constants.ROOT_PATH)))))
-	server_mux.HandleFunc("/metrics", cfg.server_metrics)
-	server_mux.HandleFunc("/healthz", is_service_available)
-	server_mux.HandleFunc("/reset", cfg.reset_metrics)
+	server_mux.HandleFunc("GET /metrics", cfg.server_metrics)
+	server_mux.HandleFunc("GET /healthz", is_service_available)
+	server_mux.HandleFunc("POST /reset", cfg.reset_metrics)
 
 	return server_mux
 }
