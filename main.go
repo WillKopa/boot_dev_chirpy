@@ -6,10 +6,12 @@ import (
 
 	"github.com/WillKopa/boot_dev_chirpy/api"
 	"github.com/WillKopa/boot_dev_chirpy/constants"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func main() {
+	godotenv.Load()
 	server_mux := api.Get_mux()
 	server := &http.Server{
 		Handler: server_mux,

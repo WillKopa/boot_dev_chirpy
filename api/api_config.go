@@ -9,12 +9,12 @@ import (
 
 	"github.com/WillKopa/boot_dev_chirpy/constants"
 	"github.com/WillKopa/boot_dev_chirpy/internal/database"
-	"github.com/joho/godotenv"
 )
 
 type apiConfig struct {
 	file_server_hits atomic.Int32
 	db_queries 		*database.Queries
+	platform		string
 }
 
 func Get_mux() *http.ServeMux {
@@ -22,6 +22,7 @@ func Get_mux() *http.ServeMux {
 	cfg := apiConfig{
 		file_server_hits: atomic.Int32{},
 		db_queries: db_queries,
+		platform: os.Getenv("PLATFORM"),
 	}
 
 	server_mux := http.NewServeMux()
@@ -29,18 +30,18 @@ func Get_mux() *http.ServeMux {
 
 	// admin
 	server_mux.HandleFunc("GET /admin/metrics", cfg.server_metrics)
-	server_mux.HandleFunc("POST /admin/reset", cfg.reset_metrics)
+	server_mux.HandleFunc("POST /admin/reset", cfg.reset_everything)
 
 	// api
 	server_mux.HandleFunc("GET /api/healthz", is_service_available)
 	server_mux.HandleFunc("POST /api/validate_chirp", validate_chirp)
+	server_mux.HandleFunc("POST /api/users", cfg.create_user)
 
 	return server_mux
 }
 
 
 func connect_db() *database.Queries {
-	godotenv.Load()
 	dbURL := os.Getenv("DB_URL")
 	db, err := sql.Open("postgres", dbURL)
 

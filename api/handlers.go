@@ -25,12 +25,33 @@ func (cfg *apiConfig) server_metrics(rw http.ResponseWriter, req *http.Request) 
 	rw.Write([]byte(text))
 }
 
-func (cfg *apiConfig) reset_metrics(rw http.ResponseWriter, req *http.Request) {
+func (cfg *apiConfig) reset_everything(rw http.ResponseWriter, req *http.Request) {
+	if cfg.platform != "dev" {
+		respond_with_error(rw, http.StatusForbidden, "You shall not pass")
+		return
+	}
+	cfg.db_queries.DeleteUsers(req.Context())
 	rw.Header().Add("Content-Type", "text/plain; charset=utf-8")
 	rw.WriteHeader(http.StatusOK)
 	cfg.file_server_hits.Store(0)
-	text := fmt.Sprintf("Hits Reset to: %v", cfg.file_server_hits.Load())
+	text := fmt.Sprintf("Hits Reset to: %v\nAll users deleted", cfg.file_server_hits.Load())
 	rw.Write([]byte(text))
+}
+
+func (cfg *apiConfig) create_user(rw http.ResponseWriter, req *http.Request) {
+	user, err := unmarshal_json[User](req)
+	if err != nil {
+		respond_with_error(rw, http.StatusBadRequest, "unable to parse json from request")
+		return
+	}
+	db_user, err := cfg.db_queries.CreateUser(req.Context(), user.Email)
+
+	if err != nil {
+		respond_with_error(rw, http.StatusInternalServerError, "Something went wrong, user not created")
+		return
+	}
+
+	respond_with_json(rw, http.StatusCreated, db_user)
 }
 
 func (cfg *apiConfig) middleware_metrics_inc(next http.Handler) http.Handler {
