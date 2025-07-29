@@ -10,15 +10,10 @@ func (cfg *apiConfig) create_user(rw http.ResponseWriter, req *http.Request) {
 	}
 	db_user, err := cfg.db_queries.CreateUser(req.Context(), user.Email)
 
-	user.UpdatedAt = db_user.UpdatedAt
-	user.CreatedAt = db_user.CreatedAt
-	user.ID = db_user.ID
-	user.Email = db_user.Email
-
 	if err != nil {
 		respond_with_error(rw, http.StatusInternalServerError, "Something went wrong, user not created")
 		return
 	}
 
-	respond_with_json(rw, http.StatusCreated, user)
+	respond_with_json(rw, http.StatusCreated, User(db_user))
 }
