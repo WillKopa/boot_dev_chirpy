@@ -34,8 +34,8 @@ func Get_mux() *http.ServeMux {
 
 	// api
 	server_mux.HandleFunc("GET /api/healthz", is_service_available)
-	server_mux.HandleFunc("POST /api/validate_chirp", validate_chirp)
 	server_mux.HandleFunc("POST /api/users", cfg.create_user)
+	server_mux.HandleFunc("POST /api/chirps", cfg.create_chirp)
 
 	return server_mux
 }

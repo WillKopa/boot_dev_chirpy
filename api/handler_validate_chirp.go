@@ -1,38 +1,20 @@
 package api
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
+	"fmt"
 	"strings"
+
+	"github.com/WillKopa/boot_dev_chirpy/constants"
 )
 
-func validate_chirp(rw http.ResponseWriter, req *http.Request) {
-	type request_params struct {
-		Chirp string `json:"body"`
+func validate_chirp(chirp string) (string, error) {
+	if len(chirp) > constants.MAX_CHIRP_LENGTH  {
+		return "", fmt.Errorf("chirp is too long. must be less than 141 characters")
 	}
 
-	type response_params struct {
-	    Cleaned_body 	string 		`json:"cleaned_body"`
-	}
-	response_body := response_params{}
+	clean_chirp := remove_profane(chirp)
+	return clean_chirp, nil
 
-	decoder := json.NewDecoder(req.Body)
-	params := request_params{}
-	err := decoder.Decode(&params)
-	max_length := 140
-	
-	if err != nil {
-		log.Printf("Error decoding parameters: %s", err)
-		respond_with_error(rw, http.StatusBadRequest, "parameters not valid")
-		return
-	} else if len(params.Chirp) > max_length  {
-		respond_with_error(rw, http.StatusBadRequest, "Chirp is too long")
-		return
-	}
-
-	response_body.Cleaned_body = remove_profane(params.Chirp)
-	respond_with_json(rw, http.StatusOK, response_body)
 }
 
 func remove_profane(text string) string {
