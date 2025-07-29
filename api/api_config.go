@@ -37,6 +37,7 @@ func Get_mux() *http.ServeMux {
 	server_mux.HandleFunc("POST /api/users", cfg.create_user)
 	server_mux.HandleFunc("POST /api/chirps", cfg.create_chirp)
 	server_mux.HandleFunc("GET /api/chirps", cfg.get_chirps)
+	server_mux.HandleFunc("GET /api/chirps/{chirpID}", cfg.get_single_chirp)
 
 	return server_mux
 }
