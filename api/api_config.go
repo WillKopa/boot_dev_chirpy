@@ -12,17 +12,19 @@ import (
 )
 
 type apiConfig struct {
-	file_server_hits atomic.Int32
-	db_queries 		*database.Queries
-	platform		string
+	file_server_hits 	atomic.Int32
+	db_queries 			*database.Queries
+	platform			string
+	secret				string
 }
 
 func Get_mux() *http.ServeMux {
 	db_queries := connect_db()
 	cfg := apiConfig{
-		file_server_hits: atomic.Int32{},
-		db_queries: db_queries,
-		platform: os.Getenv("PLATFORM"),
+		file_server_hits: 	atomic.Int32{},
+		db_queries:		 	db_queries,
+		platform: 			os.Getenv("PLATFORM"),
+		secret: 			os.Getenv("SECRET"),
 	}
 
 	server_mux := http.NewServeMux()

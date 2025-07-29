@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/WillKopa/boot_dev_chirpy/constants"
+	"github.com/WillKopa/boot_dev_chirpy/internal/auth"
 	"github.com/WillKopa/boot_dev_chirpy/internal/database"
 )
 
@@ -24,14 +25,27 @@ func (cfg *apiConfig) create_chirp(rw http.ResponseWriter, req *http.Request) {
 		respond_with_error(rw, http.StatusInternalServerError, "error parsing json from request")
 	}
 
+	auth_token, err := auth.GetBearerToken(req.Header)
+	if err != nil {
+		respond_with_error(rw, http.StatusBadRequest, "Missing JWT in header")
+		return
+	}
+
+	token_user_id, err := auth.ValidateJWT(auth_token, cfg.secret)
+	if err != nil {
+		respond_with_error(rw, http.StatusUnauthorized, "YOU SHALL NOT POST!")
+		return
+	}
+
 	chirp.Body, err = validate_chirp(chirp.Body)
 	if err != nil {
 		respond_with_error(rw, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	db_params := database.CreateChirpParams{}
 	db_params.Body = chirp.Body
-	db_params.UserID = chirp.UserID
+	db_params.UserID = token_user_id
 
 	db_chirp, err := cfg.db_queries.CreateChirp(req.Context(), db_params)
 	if err != nil {

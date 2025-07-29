@@ -4,14 +4,16 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/WillKopa/boot_dev_chirpy/internal/auth"
 )
 
 func (cfg *apiConfig) login (rw http.ResponseWriter, req *http.Request) {
 	type Login_request struct {
-		Password	string	`json:"password"`
-		Email		string	`json:"email"`
+		Password			string	`json:"password"`
+		Email				string	`json:"email"`
+		ExpiresInSeconds	int		`json:"expires_in_seconds"`
 	}
 
 	login_request, err := unmarshal_json[Login_request](req)
@@ -36,10 +38,24 @@ func (cfg *apiConfig) login (rw http.ResponseWriter, req *http.Request) {
 		respond_with_error(rw, http.StatusUnauthorized, "Incorrect email or password")
 		return
 	}
+
+	expires_in := time.Duration(login_request.ExpiresInSeconds)
+	if expires_in == 0 {
+		expires_in = time.Hour
+	}
+	auth_token, err := auth.MakeJWT(user.ID, cfg.secret, expires_in)
+
+	if err != nil {
+		log.Printf("error creating jwt token: %s", err)
+		respond_with_error(rw, http.StatusInternalServerError, "error creating jwt token")
+		return
+	}
+
 	respond_with_json(rw, http.StatusOK, User{
 		ID: user.ID,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 		Email: user.Email,
+		Token: auth_token,
 	})
 }
