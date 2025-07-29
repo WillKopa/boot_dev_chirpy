@@ -14,6 +14,9 @@ func TestJWT(t *testing.T) {
 	expires_in := 5 * time.Minute
 	result, err := MakeJWT(user_id, token_secret, expires_in)
 
+	expired := time.Hour * -1
+	expired_result, _ := MakeJWT(user_id, token_secret, expired)
+
 	if err != nil {
 		t.Fatalf("error making jwt token: %s", err)
 	}
@@ -43,6 +46,13 @@ func TestJWT(t *testing.T) {
 			name: 				"Wrong secret",
 			token_string: 		result,
 			token_secret: 		token_secret + "more secret",
+			expected_user_ud: 	uuid.Nil,
+			want_err:  			true,
+		},
+		{
+			name: 				"Expired JWT",
+			token_string: 		expired_result,
+			token_secret: 		token_secret,
 			expected_user_ud: 	uuid.Nil,
 			want_err:  			true,
 		},
