@@ -5,6 +5,8 @@ import (
 
 	"github.com/google/uuid"
 )
+// These structs will match the generated database structs of the same name.
+// They are used to set the json metadata by casting the generated structs to these.
 
 type User struct {
 	ID			uuid.UUID	`json:"id"`
