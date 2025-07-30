@@ -41,6 +41,8 @@ func Get_mux() *http.ServeMux {
 	server_mux.HandleFunc("GET /api/chirps", cfg.get_chirps)
 	server_mux.HandleFunc("GET /api/chirps/{chirpID}", cfg.get_single_chirp)
 	server_mux.HandleFunc("POST /api/login", cfg.login)
+	server_mux.HandleFunc("POST /api/refresh", cfg.refresh)
+	server_mux.HandleFunc("POST /api/revoke", cfg.revoke)
 
 	return server_mux
 }

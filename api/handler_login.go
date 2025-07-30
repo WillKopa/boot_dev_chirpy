@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/WillKopa/boot_dev_chirpy/internal/auth"
+	"github.com/WillKopa/boot_dev_chirpy/internal/database"
 )
 
 func (cfg *apiConfig) login (rw http.ResponseWriter, req *http.Request) {
 	type Login_request struct {
 		Password			string	`json:"password"`
 		Email				string	`json:"email"`
-		ExpiresInSeconds	int		`json:"expires_in_seconds"`
 	}
 
 	login_request, err := unmarshal_json[Login_request](req)
@@ -39,16 +39,23 @@ func (cfg *apiConfig) login (rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	expires_in := time.Duration(login_request.ExpiresInSeconds)
-	if expires_in == 0 {
-		expires_in = time.Hour
-	}
-	auth_token, err := auth.MakeJWT(user.ID, cfg.secret, expires_in)
+	auth_token, err := auth.MakeJWT(user.ID, cfg.secret, time.Hour * 1)
 
 	if err != nil {
 		log.Printf("error creating jwt token: %s", err)
 		respond_with_error(rw, http.StatusInternalServerError, "error creating jwt token")
 		return
+	}
+
+	refresh_token, _ := auth.MakeRefreshToken()
+	refresh_token_params := database.CreateRefreshTokenParams{
+		Token: refresh_token,
+		UserID: user.ID,
+		ExpiresAt: time.Now().Add(time.Hour * 24 * 60),
+	}
+	db_refresh_token, err := cfg.db_queries.CreateRefreshToken(req.Context(), refresh_token_params)
+	if err != nil {
+		respond_with_error(rw, http.StatusInternalServerError, "error creating refresh token")
 	}
 
 	respond_with_json(rw, http.StatusOK, User{
@@ -57,5 +64,6 @@ func (cfg *apiConfig) login (rw http.ResponseWriter, req *http.Request) {
 		UpdatedAt: user.UpdatedAt,
 		Email: user.Email,
 		Token: auth_token,
+		RefreshToken: db_refresh_token.Token,
 	})
 }
