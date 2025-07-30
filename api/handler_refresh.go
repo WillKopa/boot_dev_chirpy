@@ -20,8 +20,13 @@ func (cfg *apiConfig) refresh(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if refresh_token.ExpiresAt.After(time.Now()) {
+	if refresh_token.ExpiresAt.Before(time.Now()) {
 		respond_with_error(rw, http.StatusUnauthorized, "refresh token has expired")
+		return
+	}
+
+	if refresh_token.RevokedAt.Valid {
+		respond_with_error(rw, http.StatusUnauthorized, "refresh token access revoked, please login again")
 		return
 	}
 
