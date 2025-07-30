@@ -16,7 +16,7 @@ func (cfg *apiConfig) refresh(rw http.ResponseWriter, req *http.Request) {
 	
 	refresh_token, err := cfg.db_queries.GetRefreshToken(req.Context(), token)
 	if err != nil {
-		respond_with_error(rw, http.StatusNotFound, "refresh token not found")
+		respond_with_error(rw, http.StatusNotFound, "user for token not found")
 		return
 	}
 
@@ -30,7 +30,7 @@ func (cfg *apiConfig) refresh(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	jwt_token, err := auth.MakeJWT(refresh_token.UserID, cfg.secret, time.Hour * 1)
+	jwt_token, err := auth.MakeJWT(refresh_token.UserID, cfg.secret, time.Hour)
 
 	if err != nil {
 		respond_with_error(rw, http.StatusInternalServerError, "error creating jwt token")
