@@ -39,7 +39,7 @@ func (cfg *apiConfig) login (rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	auth_token, err := auth.MakeJWT(user.ID, cfg.secret, time.Hour * 1)
+	auth_token, err := auth.MakeJWT(user.ID, cfg.secret, time.Hour)
 
 	if err != nil {
 		log.Printf("error creating jwt token: %s", err)

@@ -14,23 +14,14 @@ func (cfg *apiConfig) refresh(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	
-	refresh_token, err := cfg.db_queries.GetRefreshToken(req.Context(), token)
+	user, err := cfg.db_queries.GetRefreshTokenUser(req.Context(), token)
+
 	if err != nil {
-		respond_with_error(rw, http.StatusNotFound, "user for token not found")
+		respond_with_error(rw, http.StatusUnauthorized, "no refresh token available")
 		return
 	}
 
-	if refresh_token.ExpiresAt.Before(time.Now()) {
-		respond_with_error(rw, http.StatusUnauthorized, "refresh token has expired")
-		return
-	}
-
-	if refresh_token.RevokedAt.Valid {
-		respond_with_error(rw, http.StatusUnauthorized, "refresh token access revoked, please login again")
-		return
-	}
-
-	jwt_token, err := auth.MakeJWT(refresh_token.UserID, cfg.secret, time.Hour)
+	jwt_token, err := auth.MakeJWT(user.ID, cfg.secret, time.Hour)
 
 	if err != nil {
 		respond_with_error(rw, http.StatusInternalServerError, "error creating jwt token")

@@ -11,8 +11,12 @@ VALUES (
 RETURNING *;
 
 
--- name: GetRefreshToken :one
-SELECT * FROM refresh_tokens WHERE token = $1;
+-- name: GetRefreshTokenUser :one
+SELECT u.* FROM users u
+JOIN refresh_tokens r ON u.id = r.user_id
+WHERE r.token = $1
+AND r.revoked_at IS NULL
+AND r.expires_at > NOW();
 
 -- name: RevokeRefreshToken :exec
 UPDATE refresh_tokens
