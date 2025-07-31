@@ -9,10 +9,15 @@ VALUES (
 )
 RETURNING *;
 
--- name: GetChirps :many
+-- name: GetChirpsASC :many
 SELECT * FROM chirps
 WHERE $1::uuid = '00000000-0000-0000-0000-000000000000'::uuid OR user_id = $1::uuid
 ORDER BY created_at ASC;
+
+-- name: GetChirpsDESC :many
+SELECT * FROM chirps
+WHERE $1::uuid = '00000000-0000-0000-0000-000000000000'::uuid OR user_id = $1::uuid
+ORDER BY created_at DESC;
 
 -- name: GetSingleChirp :one
 SELECT * from chirps
