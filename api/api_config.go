@@ -35,14 +35,15 @@ func Get_mux() *http.ServeMux {
 	server_mux.HandleFunc("POST /admin/reset", cfg.reset_everything)
 
 	// api
-	server_mux.HandleFunc("GET /api/healthz", is_service_available)
-	server_mux.HandleFunc("POST /api/users", cfg.create_user)
-	server_mux.HandleFunc("POST /api/chirps", cfg.create_chirp)
 	server_mux.HandleFunc("GET /api/chirps", cfg.get_chirps)
 	server_mux.HandleFunc("GET /api/chirps/{chirpID}", cfg.get_single_chirp)
+	server_mux.HandleFunc("POST /api/chirps", cfg.create_chirp)
+	server_mux.HandleFunc("GET /api/healthz", is_service_available)
 	server_mux.HandleFunc("POST /api/login", cfg.login)
 	server_mux.HandleFunc("POST /api/refresh", cfg.refresh)
 	server_mux.HandleFunc("POST /api/revoke", cfg.revoke)
+	server_mux.HandleFunc("POST /api/users", cfg.create_user)
+	server_mux.HandleFunc("PUT /api/users", cfg.update_user)
 
 	return server_mux
 }
