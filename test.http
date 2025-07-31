@@ -23,3 +23,7 @@ POST http://localhost:8080/admin/reset
 ###
 
 GET http://localhost:8080/api/chirps?author_id=b4136f97-2f35-415d-ae81-e4def7a3a711
+
+###
+
+GET http://localhost:8080/api/chirps

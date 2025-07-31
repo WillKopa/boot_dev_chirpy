@@ -10,8 +10,8 @@ VALUES (
 RETURNING *;
 
 -- name: GetChirps :many
-SELECT * from chirps
-WHERE $1::UUID IS NULL OR user_id = $1::UUID
+SELECT * FROM chirps
+WHERE $1::uuid = '00000000-0000-0000-0000-000000000000'::uuid OR user_id = $1::uuid
 ORDER BY created_at ASC;
 
 -- name: GetSingleChirp :one
