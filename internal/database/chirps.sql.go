@@ -58,7 +58,7 @@ func (q *Queries) DeleteChirp(ctx context.Context, arg DeleteChirpParams) error 
 
 const getChirps = `-- name: GetChirps :many
 SELECT id, created_at, updated_at, body, user_id from chirps
-WHERE $1::UUID IS NULL OR user_id = $1::UUID
+WHERE $1::UUID IS NOT NULL OR user_id = $1::UUID
 ORDER BY created_at ASC
 `
 
