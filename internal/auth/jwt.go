@@ -2,10 +2,8 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -60,16 +58,5 @@ func ValidateJWT(token_string, token_secret string) (uuid.UUID, error) {
 }
 
 func GetBearerToken(headers http.Header) (string, error) {
-	auth_header := headers.Get("Authorization")
-	if auth_header == "" {
-		return "", errors.New("no token in authorization header")
-	}
-
-	const AUTH_PREFIX = "Bearer "
-	if !strings.HasPrefix(auth_header, AUTH_PREFIX) {
-		return "", fmt.Errorf("auth token does not have prefix '%s'", AUTH_PREFIX)
-	}
-
-	auth_string := strings.TrimPrefix(auth_header, AUTH_PREFIX)
-	return auth_string, nil
+	return GetAuthFromHeader(headers, "Bearer ")
 }

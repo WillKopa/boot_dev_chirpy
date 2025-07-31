@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/WillKopa/boot_dev_chirpy/internal/auth"
 	"github.com/WillKopa/boot_dev_chirpy/internal/database"
 	"github.com/google/uuid"
 )
@@ -13,6 +14,12 @@ func (cfg *apiConfig) make_chirpy_red(rw http.ResponseWriter, req *http.Request)
 		Data		struct {
 			UserID		uuid.UUID		`json:"user_id"`
 		}		`json:"data"`
+	}
+
+	api_key, err := auth.GetAPIKey(req.Header)
+	if err != nil || api_key != cfg.polka_api_key{
+		respond_with_error(rw, http.StatusUnauthorized, "Bad API Key")
+		return
 	}
 
 	red_request, err := unmarshal_json[MakeRedRequest](req)

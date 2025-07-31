@@ -16,6 +16,7 @@ type apiConfig struct {
 	db_queries 			*database.Queries
 	platform			string
 	secret				string
+	polka_api_key		string
 }
 
 func Get_mux() *http.ServeMux {
@@ -25,6 +26,7 @@ func Get_mux() *http.ServeMux {
 		db_queries:		 	db_queries,
 		platform: 			os.Getenv("PLATFORM"),
 		secret: 			os.Getenv("SECRET"),
+		polka_api_key: 		os.Getenv("POLKA_KEY"),
 	}
 
 	server_mux := http.NewServeMux()
