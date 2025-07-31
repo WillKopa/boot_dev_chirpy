@@ -35,6 +35,7 @@ func Get_mux() *http.ServeMux {
 	server_mux.HandleFunc("POST /admin/reset", cfg.reset_everything)
 
 	// api
+	server_mux.HandleFunc("DELETE /api/chirps/{chirpID}", cfg.delete_chirp)
 	server_mux.HandleFunc("GET /api/chirps", cfg.get_chirps)
 	server_mux.HandleFunc("GET /api/chirps/{chirpID}", cfg.get_single_chirp)
 	server_mux.HandleFunc("POST /api/chirps", cfg.create_chirp)
