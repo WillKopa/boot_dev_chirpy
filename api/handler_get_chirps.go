@@ -3,10 +3,16 @@ package api
 import (
 	"log"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func (cfg *apiConfig) get_chirps(rw http.ResponseWriter, req *http.Request) {
-	db_chirps, err := cfg.db_queries.GetChirps(req.Context())
+	author_id, err := uuid.Parse(req.URL.Query().Get("author_id"))
+	if err != nil {
+		author_id = uuid.Nil
+	}
+	db_chirps, err := cfg.db_queries.GetChirps(req.Context(), author_id)
 
 	if err != nil {
 		log.Printf("Error getting all chirps from database: %s", err)

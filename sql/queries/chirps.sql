@@ -11,6 +11,7 @@ RETURNING *;
 
 -- name: GetChirps :many
 SELECT * from chirps
+WHERE $1::UUID IS NULL OR user_id = $1::UUID
 ORDER BY created_at ASC;
 
 -- name: GetSingleChirp :one
