@@ -56,5 +56,6 @@ func (cfg *apiConfig) update_user(rw http.ResponseWriter, req *http.Request) {
 		CreatedAt: updated_user.CreatedAt,
 		UpdatedAt: updated_user.UpdatedAt,
 		Email: update_params.Email,
+		IsChirpyRed: updated_user.IsChirpyRed.Bool,
 	})
 }

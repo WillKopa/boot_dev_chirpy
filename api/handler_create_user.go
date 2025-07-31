@@ -46,5 +46,6 @@ func (cfg *apiConfig) create_user(rw http.ResponseWriter, req *http.Request) {
 		CreatedAt: db_user.CreatedAt,
 		UpdatedAt: db_user.UpdatedAt,
 		Email: db_params.Email,
+		IsChirpyRed: db_user.IsChirpyRed.Bool,
 	})
 }

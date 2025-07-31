@@ -46,6 +46,10 @@ func Get_mux() *http.ServeMux {
 	server_mux.HandleFunc("POST /api/users", cfg.create_user)
 	server_mux.HandleFunc("PUT /api/users", cfg.update_user)
 
+
+	// webhooks
+	server_mux.HandleFunc("POST /api/polka/webhooks", cfg.make_chirpy_red)
+
 	return server_mux
 }
 

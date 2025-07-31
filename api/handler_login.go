@@ -65,5 +65,6 @@ func (cfg *apiConfig) login (rw http.ResponseWriter, req *http.Request) {
 		Email: user.Email,
 		Token: auth_token,
 		RefreshToken: db_refresh_token.Token,
+		IsChirpyRed: user.IsChirpyRed.Bool,
 	})
 }
